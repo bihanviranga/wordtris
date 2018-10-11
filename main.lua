@@ -27,8 +27,10 @@ function love.load()
 
     timer = 0
 
-    inert[8][5] = 'i';
-
+    function newPiece()
+        pieceX = 3
+        pieceY = 0
+    end
 
     function canPieceMove(testX, testY)
         for x = 1, pieceXCount do
@@ -60,6 +62,8 @@ function love.update(dt)
         local testY = pieceY + 1
         if canPieceMove(pieceX,testY) then
             pieceY = testY
+        else
+            newPiece()
         end
     end
 end
@@ -93,6 +97,10 @@ function love.draw()
             local fcolor = {.47, .76, .94}
             love.graphics.setColor(fcolor)
             drawBlock(x+pieceX,y+pieceY)
+
+            local tcolor = {.87, .87, .87}
+            love.graphics.setColor(tcolor)
+            love.graphics.print("WORDDDDD", pieceX*20, pieceY*20)
         end
     end
 end
@@ -108,5 +116,11 @@ function love.keypressed(key)
         if canPieceMove(testX, pieceY) then
             pieceX = pieceX + 1
         end
+    elseif key == 'space' then
+        while canPieceMove(pieceX, pieceY + 1) do
+            pieceY = pieceY + 1
+        end
+    elseif key == 'r' then -- DEBUG
+        newPiece()
     end
 end     
