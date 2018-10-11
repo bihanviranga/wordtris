@@ -13,16 +13,42 @@ function love.load()
     end
 
     box = {
-        {' ',' ',' ',' '},
         {'i','i','i','i'},
-        {' ',' ',' ',' '},
-        {' ',' ',' ',' '}
+        {'i','i','i','i'},
+        {'i','i','i','i'},
+        {'i','i','i','i'}
     }
 
     pieceX = 5
     pieceY = 0
 
+    pieceXCount = 4
+    pieceYCount = 4
+
     timer = 0
+
+    inert[8][5] = 'i';
+
+
+    function canPieceMove(testX, testY)
+        for x = 1, pieceXCount do
+            for y = 1, pieceYCount do
+                if box[y][x] ~= ' '
+                and (testX + x) < 1 then
+                    return false
+                elseif box[y][x] ~= ' '
+                and (testX + x) > gridXCount then
+                    return false
+                elseif box[y][x] ~= ' '
+                and (testY + y) > gridYCount then
+                    return false
+                elseif inert[testY+y][testX+x] ~= ' ' then
+                    return false
+                end
+            end
+        end
+        return true
+    end
 end
 
 function love.update(dt)
@@ -30,7 +56,11 @@ function love.update(dt)
     local timerLimit = 0.5
     if timer >= timerLimit then
         timer = timer - timerLimit
-        pieceY = pieceY + 1
+        -- pieceY = pieceY + 1
+        local testY = pieceY + 1
+        if canPieceMove(pieceX,testY) then
+            pieceY = testY
+        end
     end
 end
 
@@ -56,16 +86,9 @@ function love.draw()
             drawBlock(x,y)
         end
     end
-    -- for y = 1,4 do
-    --     for x = 1,4 do
-    --         local fcolor = {.47, .76, .94}
-    --         love.graphics.setColor(fcolor)
-    --         drawBlock(x,y)
-    --     end
-    -- end
 
-    for y = 1, 4 do
-        for x = 1, 4 do
+    for y = 1, pieceYCount do
+        for x = 1, pieceXCount do
             local block = box[y][x]
             local fcolor = {.47, .76, .94}
             love.graphics.setColor(fcolor)
@@ -76,8 +99,14 @@ end
 
 function love.keypressed(key)
     if key == 'left' then
-        pieceX = pieceX - 1
+        local testX = pieceX - 1
+        if canPieceMove(testX, pieceY) then
+            pieceX = pieceX - 1
+        end
     elseif key == 'right' then
-        pieceX = pieceX + 1
+        local testX = pieceX + 1
+        if canPieceMove(testX, pieceY) then
+            pieceX = pieceX + 1
+        end
     end
-end
+end     
